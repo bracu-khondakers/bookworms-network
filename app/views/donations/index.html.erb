@@ -1,0 +1,30 @@
+<h1>Listing Donations</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Donated by</th>
+            <th>Book donated</th>
+            <th>Accepted?</th>
+            <th colspan="3"></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% @donations.each do |donation| %>
+        <tr>
+            <td><%= donation.id %></td>
+            <td><%= link_to donation.book.title, book_path(donation.book) %></td>
+            <td><%= link_to donation.user.name, user_path(donation.user) %></td>
+            <td><%= donation.accepted %> </td>
+            <% if current_user and current_user.privilege and current_user.privilege.admin %>
+            <td><%= button_to 'Toggle acceptance!', {controller: "donations", action: "accept", id: donation.id}, :method=> :post, class: 'btn btn-default'  %></td> 
+            <% end %>
+        </tr>
+        <% end %>
+    </tbody>
+</table>
+
+<br>
+

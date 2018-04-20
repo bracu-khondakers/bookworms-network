@@ -1,0 +1,32 @@
+<h1>Listing Reviews</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User reviewed</th>
+            <th>Reviewed by</th>
+            <th>Rating</th>
+            <th>Review</th>
+            <th>Approved?</th>
+            <th colspan="3"></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% @reviewerships.each do |reviewership| %>
+        <tr>
+            <td><%= reviewership.id %></td>
+            <td><%= link_to reviewership.user.name, user_path(reviewership.user) %></td>
+            <td><%= link_to reviewership.reviewer.name, user_path(reviewership.reviewer) %></td>
+            <td><%= reviewership.rating %></td>
+            <td><%= reviewership.review %></td>
+            <td><%= reviewership.approved %> </td>
+            <td><%= button_to 'Toggle approval!', {controller: "reviewerships", action: "approve", id: reviewership.id}, :method=> :post, class: 'btn btn-default' %></td> 
+        </tr>
+        <% end %>
+    </tbody>
+</table>
+
+<br>
+

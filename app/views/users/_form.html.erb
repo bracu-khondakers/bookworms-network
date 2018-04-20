@@ -1,0 +1,26 @@
+<%= form_for(@user) do |f| %>
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this location from being saved:</h2>
+
+      <ul>
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+      <%= f.label :location %>
+      <% if Location.exists?(user_id: current_user.id) %>
+      <%= f.text_field :location, :size=>'50', :maxlength=>'254', class: 'form-control', :value=> current_user.location.address %>
+      <% else %>
+      <%= f.text_field :location, :size=>'50', placeholder: "Provide an approximate location, not full address.", :maxlength=>'254', class: 'form-control'%>
+      <% end %>
+  </div>
+
+  <div class="actions">
+      <%= f.submit 'Update Location', class: 'btn btn-success' %>
+  </div>
+<% end %>

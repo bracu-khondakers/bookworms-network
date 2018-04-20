@@ -1,0 +1,26 @@
+<h1>Listing Authors</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>AuthorID</th>
+      <th>Books authored</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @authors.each do |author| %>
+      <tr>
+        <td><%= author.name%></td>
+          <td><%= author.author_id %></td>
+          <% author.books.find_each do |book| %>
+            <td><%= link_to book.title, book %></td>
+          <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>

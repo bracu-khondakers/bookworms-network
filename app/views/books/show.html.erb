@@ -1,0 +1,129 @@
+<div class="container text-center">    
+  <div class="row">
+    <div class="col-sm-3 well">
+      <h2>
+          <strong><%= @book.title %></strong><br>          
+      </h2>
+      <h3>
+          <strong>Average rating:</strong><br>
+          <%= number_with_precision BookReview.where(book_id: @book.id, approved: true).average(:rating), precision: 1 %>
+      </h3>
+    </div>
+    <div class="col-sm-9">    
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-default text-left">
+            <div class="panel-body">
+              <strong>Owner:</strong>
+              <% if @book.user_id %>
+                <%= link_to User.where(:id=>@book.user_id).pluck(:name)[0], user_path(@book.user_id) %>
+              <% end %>
+              <p>
+                  <strong>Isbn:</strong>
+                  <%= @book.isbn %>
+              </p>
+              <p>
+                  <strong>Title:</strong>
+                  <%= @book.title %>
+              </p>
+              <p> 
+                  <strong>Author/s:</strong>
+                  <% if @book.authors %>
+                    <% @book.authors.each do |author| %>
+                        <%= author.name + ", " %>
+                    <% end %>
+                  <% end %>
+              </p>
+              <p>
+                <strong>Subject:</strong>
+                <%= @book.genre %>
+              </p>
+              <p>
+                  <strong>Availability:</strong>
+                  <%= @book.availability %>
+              </p>
+              <p>
+                  <strong>Condition:</strong>
+                  <%= @book.condition %>
+              </p>
+              <p>
+                  <strong>Market price:</strong>
+                  <%= @book.market_price %>
+              </p>
+              <p>
+                  <strong>Publisher:</strong>
+                  <td><% if @book.publisher %><%= @book.publisher.name %><% end %></td>
+              </p>
+            </div>
+          </div>
+        </div>
+     </div>
+      
+      <div class="row">
+        <div class="col-sm-12">
+           <h1 style="text-align: center;">Reviews</h1>           
+           <% BookReview.where(book_id: @book.id).each do |book_review| %>
+             <% if book_review.approved == true %>
+                <div class="well">
+                    <h3><%= link_to User.where(:id=>book_review.user_id).pluck(:name)[0], user_path(book_review.user_id) %>: </h3>
+                    <strong><%= book_review.review %></strong><br>
+                    <strong>Rated: <%= book_review.rating %></strong><br>
+                    <strong><%= book_review.updated_at %></strong><br>                
+                    <% if book_review.user_id == current_user.id %>
+                        <%= link_to 'Delete', "delete_review/#{book_review.id}", method: :delete %><br/>
+                    <% end %>                
+                </div>                
+              <% end %>
+            <% end %>
+        </div>
+      </div>
+      <hr></hr>
+      <div class="col-sm-12">
+          <div class="form-group">
+              <div class="row">
+                  <div class="col-xs-12">
+                      <%= form_for(@book, :url => {:action => "post_review"}, method: :post) do |f| %>
+                      <% if @book.errors.any? %>
+                          <div id="error_explanation">
+                            <h2><%= pluralize(@book.errors.count, "error") %> prohibited this book review from being saved:
+                            </h2>
+                            <ul>
+                                <% @book.errors.full_messages.each do |message| %>
+                                <li><%= message %></li>
+                                <% end %>
+                            </ul>
+                            </div>
+                            <% end %>
+                            <br/>
+                            <strong>Have you read this book? Leave a review!</strong>
+                            <div class="field">
+                                <label class="radio-inline">
+                                    <%= radio_button_tag(:rating, "1") %>1
+                                </label>
+                                <label class="radio-inline">
+                                    <%= radio_button_tag(:rating, "2") %>2
+                                </label>
+                                <label class="radio-inline">
+                                    <%= radio_button_tag(:rating, "3") %>3
+                                </label>
+                                <label class="radio-inline">
+                                    <%= radio_button_tag(:rating, "4") %>4
+                                </label>  
+                                <label class="radio-inline">
+                                    <%= radio_button_tag(:rating, "5") %>5
+                                </label>
+                            </div>
+                            <div class="field">
+                                <%= text_area_tag :review, nil, class: 'form-control', placeholder: "Write a review", style: "height:100px" %>
+                            </div>
+                            <div class="actions">
+                                <%= f.submit "Submit!", :class=>'btn btn-lg btn-primary btn-block' %>
+                            </div>
+                      <% end %>                            
+                  </div>                          
+              </div>            
+          </div>      
+        </div>
+    </div>
+  </div>
+</div>

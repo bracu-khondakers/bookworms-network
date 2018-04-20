@@ -1,0 +1,17 @@
+<h1>Some raw queries: <br/></h1>
+<br/>
+<h4>
+<br/>
+The number of deals every user has made: <%=  ActiveRecord::Base.connection.execute('select users.name, count(*) from users, deals where deals.seller_id = users.id or deals.buyer_id = users.id group by users.id;').each {|row| p row} %>
+<br/>
+</h4>
+<br/>
+<h4>
+Find the latest seller: <%= ActiveRecord::Base.connection.execute("select users.name from users join deals on deals.seller_id=users.id order by deals.updated_at desc limit 1;").each {|row| p row} %>
+<br/>
+</h4>
+<br/>
+<h4>
+Find the latest buyer: <%= ActiveRecord::Base.connection.execute("select users.name from users join deals on deals.buyer_id=users.id order by deals.updated_at desc limit 1;").each {|row| p row} %>
+<br/>
+</h4>

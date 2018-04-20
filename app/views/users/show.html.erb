@@ -1,0 +1,228 @@
+<div id="bookModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add a book</h4>
+            </div>
+            <div class="modal-body">
+                <%= form_tag books_path, method: 'post', :class => "form-horizontal", :role => "form" do %>
+                <div class="form-group">
+                    <label for="isbn" class="col-sm-3 control-label">Enter ISBN: </label> 
+                    <div class="col-sm-7"><%= text_field :book, :isbn, class: 'form-control' %></div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-5">
+                        <%= button_tag "Add book", :type=>'submit', :class => "btn btn-primary" %>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="donateModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Donate a book</h4>
+            </div>
+            <div class="modal-body">
+                <%= form_tag url_for(:controller => 'donations', :action => 'create'), method: 'post', :class => "form-horizontal", :role => "form" do %>
+                <div class="form-group">
+                    <label for="isbn" class="col-sm-3 control-label">Enter Book ISBN: </label>
+                    <div class="col-sm-7"><%= text_field :book, :isbn, class: 'form-control' %></div>                            
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-5">
+                        <%= button_tag "Donate", :type=>'submit', :class => "btn btn-primary" %>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container text-center">    
+  <div class="row">
+    <div class="col-sm-3 well">
+      <div class="well">
+          <%= image_tag @user.image_url.to_s, size: "200x200", alt: "Profile Photo", class: "img-circle" %>
+          <%= form_for @user, html: { multipart: true } do |f| %>
+              <% if @user.errors.any? %>
+                  <div id="error_explanation">
+                      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+                      <ul>
+                          <% @user.errors.full_messages.each do |message| %>
+                          <li><%= message %></li>
+                          <% end %>
+                      </ul>
+                  </div>
+              <% end %>
+              <% if @user.id == current_user.id %>
+                  <div class="field">
+                      <%= f.label :select_profile_photo, class: 'btn btn-primary', for: 'user_image' %><br>
+                      <%= f.file_field :image, style: 'display:none' %>
+                      <% if f.object.image? %>
+                          <%= f.label :remove_image%>
+                          <%= f.check_box :remove_image %> 
+                      <% end %>
+                  </div>
+                  <div class="actions">
+                      <%= f.submit 'Upload!', class: 'btn btn-success' %>
+                  </div>
+              <% end %>
+          <% end %>
+    </div>
+    <div class="well">
+          <p>
+              <strong>Name:</strong>
+              <%= @user.name %>
+          </p>
+          <% if @user.id == current_user.id %>
+          <p>
+              <div class="col-sm-12" style="word-wrap: break-word">
+                  <strong>Email:</strong>
+                  <%= @user.email %>
+              </div>             
+          </p>
+          <% end %>          
+          <p>
+              <strong>Birth date:</strong>
+              <%= @user.birth_date %>
+          </p>
+          <p>
+              <div class="col-sm-12" style="word-wrap: break-word">
+                  <strong>About me:</strong>
+                  <%= @user.about_me %>
+              </div>
+          </p>
+          <p>
+              <strong>Last signed in at:</strong>
+              <%= @user.last_sign_in_at.localtime %>
+          </p>
+      </div>
+      <div class="well">
+          <strong>Average rating for this user: </strong>
+          <h1><%= number_with_precision @user.reviewerships.where(approved: true).average(:rating), precision: 1 %></h1> 
+      </div>
+      <% if @deal_exists %>
+          <div class="well">  
+              <%= form_for(@user, url: {:action => "post_review"}, method: :post) do |f| %>
+              <% if @user.errors.any? %>
+                    <div id="error_explanation">
+                        <h2><%= pluralize(@user.errors.count, "error") %> prohibited this review from being saved:
+                        </h2>
+                        <ul>
+                            <% @user.errors.full_messages.each do |message| %>
+                                <li><%= message %></li>
+                            <% end %>
+                        </ul>
+                    </div>
+              <% end %>
+              <strong>Looks like you had a deal recently.</strong>
+              <strong>Would you like to leave a review?</strong>
+              <div class="field">
+                  <label class="radio-inline">
+                      <%= radio_button_tag(:rating, "1") %>1
+                  </label>
+                  <label class="radio-inline">
+                      <%= radio_button_tag(:rating, "2") %>2
+                  </label>
+                  <label class="radio-inline">
+                      <%= radio_button_tag(:rating, "3") %>3
+                  </label>
+                  <label class="radio-inline">
+                      <%= radio_button_tag(:rating, "4") %>4
+                  </label>  
+                  <label class="radio-inline">
+                      <%= radio_button_tag(:rating, "5") %>5
+                  </label>
+              </div>
+              <div class="field">
+                  <%= text_area_tag :review, nil,  class: 'form-control' %>
+              </div>              
+              <div class="actions">
+                  <%= f.submit "Submit!", :class=>'btn btn-small btn-success' %>
+              </div>
+              <% end %>
+          </div>
+      <% end %>
+      <div class="well">
+          <h4>Reviews for user:</h4>
+          <% for reviewership in @user.reviewerships %>
+              <% if reviewership.approved == true %>
+                <strong><%= link_to User.find(reviewership.reviewer_id).name, user_path(User.find(reviewership.reviewer_id)) %>: </strong> <br/> 
+                <strong><%= reviewership.review %></strong> <br/> 
+                <strong>Rated: <%= reviewership.rating %></strong> <br/>
+                <strong><%= reviewership.updated_at %></strong> <br/> 
+                <hr>
+             <% end %>
+          <% end %>
+      </div>
+    </div>
+    <div class="col-sm-7">    
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-default text-left">
+            <div class="panel-body">
+                <% if @user.id == current_user.id %>
+                <h4><span class="glyphicon glyphicon-globe"></span><%= link_to 'Edit location', edit_user_path(@user) %></h4><br/>
+                <% end %>
+                <div style='width: inherit; height: 400px;'>
+                    <div id="map" style='width: 100%; height: 100%'></div>
+                </div>
+            </div>
+          </div>
+        </div>
+     </div>
+    <h4>My list of books:</h4> 
+        
+     <%= render 'book' %>      
+      
+      <% if @user.id == current_user.id %>
+          <div class="row">
+            <div class="col-sm-12">
+                <%= button_tag 'Add a new book', {'class' => 'btn btn-success btn-block', 'role' => 'button', 'data-toggle' =>  "modal", 'data-target' => '#bookModal'}  %>
+            </div>
+          </div>
+      <% end %>
+    </div>
+    <div class="col-sm-2 well">
+        <div class="thumbnail">
+            <%= button_tag 'Donate to us!', {'class' => 'btn btn-small btn-info', 'role' => 'button', 'data-toggle' =>  "modal", 'data-target' => '#donateModal'}  %>
+            <img src="" alt="" width="400" height="300">
+        </div>
+        <div class="well">
+            <p><strong>Our most recent donor: </strong></p>
+            <% donator = Donation.where(:accepted=>true).last %>
+            <% if donator %>
+                <%= link_to Donation.where(:accepted=>true).last.user.name, Donation.last.user %>
+            <% else %>
+            Sorry, no donors yet :(
+            <% end %>
+        </div>
+    </div>
+  </div>
+
+<%= will_paginate @user_books %>
+</div>
+
+<footer class="container-fluid text-center">
+</footer>
+
+<script type="text/javascript">
+    handler = Gmaps.build('Google');        
+    handler.buildMap({ internal: {id: 'map'}}, function(){
+        markers = handler.addMarkers(<%= raw @hash.to_json %>);        
+        handler.bounds.extendWith(markers);
+        handler.fitMapToBounds();
+    });
+</script>

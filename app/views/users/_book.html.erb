@@ -1,0 +1,74 @@
+<% @user_books.each do |book|%>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="well">
+              <strong>Title:</strong>
+              <%= link_to book.title, book_path(book)%><br/>
+              <strong>ISBN:</strong>
+              <%= book.isbn %><br/>             
+              <strong>Authors:</strong>
+              <% if book.authors %>
+                <% book.authors.each do |author| %>
+                  <%= author.name + " | " %>
+                <% end %><br/>
+              <% end %>
+              <strong>Subject:</strong>
+              <%= book.genre %><br/> 
+              <% if book.condition %>
+                <strong>Condition:</strong>
+                <%= book.condition %><br/>
+              <% end %>
+              <% if book.market_price %>
+                <strong>Market Price:</strong>
+                <%= book.market_price %><br/>
+              <% end %>
+              <strong>Publisher:</strong>
+              <td><% if book.publisher %><%= book.publisher.name %><% end %></td><br/>
+              <% if book.availability %>
+                <h3>Available now!</h3>
+              <% else %>
+                <h3>Not available.</h3>
+              <% end %></br>
+              <% if Donation.exists?(book_id: book.id, accepted: true) %>
+                <h4>This book has been donated by the user.</h4>
+              <% end %>
+              <% if @user.id == current_user.id %>
+              <td>Want to <%= link_to 'edit', edit_book_path(book) %> something?</td>
+              <td>(Click here to <%= link_to 'delete', book, method: :delete, data: { confirm: 'Are you sure?' } %> this item)</td>              
+            <% end %>
+            <% deal = Deal.find_by(:book_id=>book.id) %>            
+            <% if deal.present? %>
+                <% if deal.buyer_id == current_user.id %>
+                    <% other_end_of_deal = User.find(deal.seller_id) %>
+                <% else %>
+                    <% other_end_of_deal = User.find(deal.buyer_id) %>
+                <% end %>
+                <% if book.user != current_user %>
+                    <% if deal.confirmed %>            
+                        <div class="well">
+                            <strong>You had a deal recently. Would you like to leave a review for the <%= link_to 'user', user_path(other_end_of_deal)%>?</strong>
+                        </div>                
+                    <% else %>
+                        <div class="well">
+                            <strong>Contact info requested! Please wait for response.</strong>
+                        </div>
+                    <% end %>
+                <% else %>
+                    <% if deal.confirmed %>            
+                        <div class="well">                            
+                            <strong>You had a deal recently. Would you like to leave a review for the <%= link_to 'user', user_path(other_end_of_deal)%>?</strong>
+                        </div>                
+                    <% else %>
+                        <div class="well">
+                            <strong>You have a pending contact request. Please respond!</strong>
+                        </div>
+                    <% end %>
+                <% end %>
+            <% elsif book.user != current_user %>
+                <%= button_to 'Request this book', "req/#{book.id}", :method => :post, 'class' => 'btn btn-success', 'role' => 'button' %>
+            <% end %>
+        </div>
+    </div>
+</div>
+<br/>
+<% end %>
