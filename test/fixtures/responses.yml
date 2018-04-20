@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  deal_id: 
+  buyer_review: MyString
+  buyer_rating: MyString
+  seller_review: MyString
+  seller_rating: MyString
+  buyer_review_flag: false
+  seller_review_flag: false
+
+two:
+  deal_id: 
+  buyer_review: MyString
+  buyer_rating: MyString
+  seller_review: MyString
+  seller_rating: MyString
+  buyer_review_flag: false
+  seller_review_flag: false
